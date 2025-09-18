@@ -1,0 +1,6 @@
+python-binance
+pandas
+flask
+cerberus
+python-dotenv
+pyyaml

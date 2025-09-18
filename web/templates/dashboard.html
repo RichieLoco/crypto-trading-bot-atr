@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Trading Bot Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>📈 Trading Bot Dashboard</h1>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Total Trades: {{ summary.total }}</li>
+    <li>Wins: {{ summary.wins }}</li>
+    <li>Losses: {{ summary.losses }}</li>
+    <li>Win Rate: {{ summary.win_rate }}%</li>
+    <li>Average PnL: {{ summary.avg_pnl }}</li>
+    <li>Net Profit: {{ summary.net_profit }}</li>
+  </ul>
+
+  <h2>Live PnL Chart</h2>
+  <canvas id="pnlChart" width="400" height="150"></canvas>
+
+  <h2>Open Trades</h2>
+  <table border="1">
+    <tr><th>Type</th><th>Entry</th><th>SL</th><th>TP</th><th>Timestamp</th></tr>
+    {% for trade in open_trades %}
+      <tr>
+        <td>{{ trade['Type'] }}</td>
+        <td>{{ trade['Entry'] }}</td>
+        <td>{{ trade['Stop Loss'] }}</td>
+        <td>{{ trade['Take Profit'] }}</td>
+        <td>{{ trade['Timestamp'] }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Recent Closed Trades</h2>
+  <table border="1">
+    <tr><th>Type</th><th>Result</th><th>PnL</th><th>Timestamp</th></tr>
+    {% for trade in recent_closed %}
+      <tr>
+        <td>{{ trade['Type'] }}</td>
+        <td>{{ trade['Result'] }}</td>
+        <td>{{ trade['PnL'] }}</td>
+        <td>{{ trade['Timestamp'] }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <script>
+    fetch('/pnl-data')
+      .then(res => res.json())
+      .then(data => {
+        const ctx = document.getElementById('pnlChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: 'Cumulative PnL',
+              data: data.data,
+              borderColor: 'green',
+              borderWidth: 2,
+              fill: false
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      });
+  </script>
+</body>
+</html>

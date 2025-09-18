@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crypto_trading_bot
+    restart: always
+    volumes:
+      - ./paper_trades_log.csv:/app/paper_trades_log.csv
+      - ./config.yaml:/app/config.yaml
+    depends_on:
+      - web
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: crypto_trading_ui
+    ports:
+      - "5000:5000"
+    restart: always
+    volumes:
+      - ./paper_trades_log.csv:/app/paper_trades_log.csv
